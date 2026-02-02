@@ -1,0 +1,18 @@
+# Compiled object files
+*.o
+*.a
+*.so
+
+# Executable
+flowmeter
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+*.out
