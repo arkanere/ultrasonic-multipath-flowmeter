@@ -16,3 +16,12 @@ flowmeter
 
 # Build artifacts
 *.out
+
+# Clojure/Leiningen
+target/
+classes/
+.lein-failures
+.lein-repl-history
+.lein-plugins/
+*.jar
+pom.xml
