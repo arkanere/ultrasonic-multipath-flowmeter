@@ -3,8 +3,10 @@
 *.a
 *.so
 
-# Executable
-flowmeter
+# Executable (anchored one level down, so it is the binary in each language
+# directory and not, say, haskell-language/src/Flowmeter/ -- git is
+# case-insensitive on macOS and a bare `flowmeter` pattern matches that dir)
+/*/flowmeter
 
 # IDE and editor files
 .vscode/
@@ -40,3 +42,19 @@ venv/
 # Node.js
 node_modules/
 npm-debug.log*
+
+# FreeBASIC / Free Pascal
+*.ppu
+*.ppl
+*.compiled
+
+# Elixir
+_build/
+deps/
+*.ez
+.elixir_ls/
+
+# Haskell
+dist-newstyle/
+dist/
+*.hi

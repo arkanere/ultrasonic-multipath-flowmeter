@@ -1,8 +1,8 @@
 # Ultrasonic Multipath Flow Meter
 
-A six-language implementation of transit-time differential ultrasonic flow meter algorithms for educational purposes. This project demonstrates how ultrasonic flow meters measure fluid velocity and volumetric flow rate in pipes using multiple acoustic paths.
+A ten-language implementation of transit-time differential ultrasonic flow meter algorithms for educational purposes. This project demonstrates how ultrasonic flow meters measure fluid velocity and volumetric flow rate in pipes using multiple acoustic paths.
 
-The same physics problem is solved in **C**, **C++**, **Rust**, **Python**, **JavaScript**, and **Clojure**, so the algorithm stays fixed while the language idioms vary — manual memory management next to RAII, ownership, dataclasses, frozen objects, and immutable maps.
+The same physics problem is solved in **C**, **C++**, **Rust**, **Basic**, **Pascal**, **Python**, **JavaScript**, **Clojure**, **Elixir**, and **Haskell**, so the algorithm stays fixed while the language idioms vary — manual memory management next to RAII, ownership, records, dataclasses, frozen objects, immutable maps, pattern matching, and type-enforced purity.
 
 ## Quick Links
 
@@ -11,9 +11,13 @@ The same physics problem is solved in **C**, **C++**, **Rust**, **Python**, **Ja
 | **C** | [`c-language/`](c-language/) | Systems programming, manual memory management |
 | **C++** | [`cpp-language/`](cpp-language/) | Value semantics, RAII, `std::vector` |
 | **Rust** | [`rust-language/`](rust-language/) | Ownership, iterators, library + binary crate |
+| **Basic** | [`basic-language/`](basic-language/) | Procedural, `.bi` headers, explicit typing |
+| **Pascal** | [`pascal-language/`](pascal-language/) | Structured, units, `const` record parameters |
 | **Python** | [`python-language/`](python-language/) | Frozen dataclasses, type hints, stdlib only |
 | **JavaScript** | [`javascript-language/`](javascript-language/) | ES modules, frozen plain objects |
 | **Clojure** | [`clojure-language/`](clojure-language/) | Functional, REPL-driven, immutable maps |
+| **Elixir** | [`elixir-language/`](elixir-language/) | Functional, pattern matching, BEAM runtime |
+| **Haskell** | [`haskell-language/`](haskell-language/) | Pure functional, lazy, algebraic data types |
 
 - **GitHub Repository:** https://github.com/arkanere/ultrasonic-multipath-flowmeter
 
@@ -89,6 +93,19 @@ ultrasonic-multipath-flowmeter/
 │       ├── lib.rs                      # Core algorithm (library crate)
 │       └── main.rs                     # Example program (binary crate)
 │
+├── basic-language/                     # FreeBASIC implementation
+│   ├── README.md                       # Detailed FreeBASIC documentation
+│   ├── Makefile                        # Build configuration
+│   ├── flowmeter.bi                    # Header with data structures
+│   ├── flowmeter.bas                   # Core algorithm
+│   └── main.bas                        # Example program
+│
+├── pascal-language/                    # Free Pascal implementation
+│   ├── README.md                       # Detailed Pascal documentation
+│   ├── Makefile                        # Build configuration
+│   ├── flowmeter.pas                   # FlowMeter unit (core algorithm)
+│   └── main.pas                        # Example program
+│
 ├── python-language/                    # Python implementation
 │   ├── README.md                       # Detailed Python documentation
 │   └── ultrasonic_flowmeter/
@@ -104,12 +121,29 @@ ultrasonic-multipath-flowmeter/
 │       ├── core.js                     # Core algorithm
 │       └── main.js                     # Example program
 │
-└── clojure-language/                   # Clojure implementation
-    ├── README.md                       # Detailed Clojure documentation
-    ├── project.clj                     # Leiningen configuration
-    └── src/ultrasonic_flowmeter/
-        ├── core.clj                    # Core algorithm
-        └── main.clj                    # Example program
+├── clojure-language/                   # Clojure implementation
+│   ├── README.md                       # Detailed Clojure documentation
+│   ├── project.clj                     # Leiningen configuration
+│   └── src/ultrasonic_flowmeter/
+│       ├── core.clj                    # Core algorithm
+│       └── main.clj                    # Example program
+│
+├── elixir-language/                    # Elixir implementation
+│   ├── README.md                       # Detailed Elixir documentation
+│   ├── mix.exs                         # Mix project configuration
+│   └── lib/
+│       ├── ultrasonic_flowmeter.ex     # Public API re-exports
+│       └── ultrasonic_flowmeter/
+│           ├── core.ex                 # Core algorithm
+│           └── main.ex                 # Example program
+│
+└── haskell-language/                   # Haskell implementation
+    ├── README.md                       # Detailed Haskell documentation
+    ├── flowmeter.cabal                 # Cabal configuration
+    ├── src/Flowmeter/
+    │   └── Core.hs                     # Core algorithm (library)
+    └── app/
+        └── Main.hs                     # Example program (executable)
 ```
 
 Every implementation follows the same split: a **core** module holding the pure
@@ -153,6 +187,32 @@ cd rust-language
 cargo run                 # Build and run
 cargo build --release     # Optimized build
 cargo doc --open          # Browse the API docs
+```
+
+### Basic
+
+**Prerequisites:** FreeBASIC 1.09+ (`fbc`), Make
+
+```bash
+cd basic-language
+make          # Build
+./flowmeter   # Run
+make clean
+```
+
+FreeBASIC has no Homebrew formula for Apple Silicon; on macOS use a Linux
+container or a cross-build. Linux and Windows builds are at
+[freebasic.net](https://www.freebasic.net/get).
+
+### Pascal
+
+**Prerequisites:** Free Pascal Compiler (FPC) 3.2+, Make
+
+```bash
+cd pascal-language
+make          # Build
+./flowmeter   # Run
+make clean
 ```
 
 ### Python
@@ -200,9 +260,49 @@ lein repl    # Interactive REPL
 (:volumetric-flow result)  ; 0.031416 m³/s
 ```
 
+### Elixir
+
+**Prerequisites:** Elixir 1.14+, Erlang/OTP 25+ (no dependencies)
+
+```bash
+cd elixir-language
+mix run -e "UltrasonicFlowmeter.Main.main([])"   # Run demo
+mix escript.build && ./flowmeter                 # Standalone binary
+iex -S mix                                       # Interactive shell
+```
+
+**IEx Usage:**
+```elixir
+alias UltrasonicFlowmeter, as: UF
+alias UltrasonicFlowmeter.Main
+
+# Create a 2-path configuration
+config = Main.create_2path_config(0.1)
+
+# Simulate measurements
+measurements = Main.simulate_measurements(config, 2.0)
+
+# Calculate flow rate
+result = UF.calculate_flow_rate(config, measurements)
+
+# Get results
+result.volumetric_flow   # 0.031416 m³/s
+```
+
+### Haskell
+
+**Prerequisites:** GHC 8.10+ and Cabal 3.0+ (nothing beyond `base`)
+
+```bash
+cd haskell-language
+cabal run flowmeter        # Build and run
+cabal repl                 # Interactive session
+runghc -isrc app/Main.hs   # Or skip Cabal entirely
+```
+
 ### Expected Output
 
-All six print the same numbers:
+All ten print the same numbers:
 
 ```
 === 2-PATH CONFIGURATION ===
@@ -225,36 +325,55 @@ All six print the same numbers:
 | **C** | Imperative, systems | Manual `malloc`/`free` | Structs + raw pointers | Return codes (`-1`, `NULL`) | Make + GCC |
 | **C++** | Multi-paradigm, value semantics | RAII, automatic | Structs + `std::vector` | Exceptions | Make + g++ |
 | **Rust** | Multi-paradigm, ownership | Ownership, automatic | Structs + `Vec` | `assert!` on misuse | Cargo |
+| **Basic** | Imperative, procedural | `ReDim`, auto-freed arrays | UDTs + variable-length arrays | Return codes (`-1`) | Make + fbc |
+| **Pascal** | Imperative, structured | Reference-counted dynamic arrays | Records + `array of` | Exceptions | Make + fpc |
 | **Python** | Multi-paradigm, dynamic | Garbage collected | Frozen dataclasses + tuples | `ValueError` | None (stdlib only) |
 | **JavaScript** | Multi-paradigm, dynamic | Garbage collected | Frozen plain objects | `throw new Error` | None (Node ESM) |
 | **Clojure** | Functional, interactive | Garbage collected (JVM) | Immutable maps + vectors | Guard clauses returning `0.0` | Leiningen |
+| **Elixir** | Functional, concurrent | Garbage collected (BEAM) | Structs + lists | Guard clauses + `ArgumentError` | Mix |
+| **Haskell** | Pure functional, lazy | Garbage collected | Records + lists | Guard equations + `error` | Cabal |
 
 | Language | Iteration Style | Type Checking | Development Loop |
 |----------|-----------------|---------------|------------------|
 | **C** | `for` over an index | Static (compiler) | Compile-test cycle |
 | **C++** | `for` over an index, range-`for` | Static (compiler) | Compile-test cycle |
 | **Rust** | `iter().zip().map().sum()` | Static (compiler, with inference) | Compile-test cycle |
+| **Basic** | `For` over an index | Static (compiler) | Compile-test cycle |
+| **Pascal** | `for` over an index | Static (compiler) | Compile-test cycle |
 | **Python** | `zip` + generator expressions | Dynamic (hints unenforced) | Run or REPL |
 | **JavaScript** | `map` / `reduce` | Dynamic | Run or REPL |
 | **Clojure** | `mapv` / `reduce` | Dynamic (runtime) | REPL-driven |
+| **Elixir** | `Enum.zip` / `Enum.map` / `Enum.sum` | Dynamic (typespecs via Dialyzer) | IEx-driven |
+| **Haskell** | `zipWith` / `sum` | Static (compiler, with inference) | GHCi-driven |
 
 ### Algorithm Equivalence
 
-All six implementations produce **identical numeric results**:
+All ten implementations produce **identical numeric results**:
 
-| Implementation | 2-path flow rate | 4-path flow rate |
-|----------------|------------------|------------------|
-| C | 0.031416 m³/s | 0.026180 m³/s |
-| C++ | 0.031416 m³/s | 0.026180 m³/s |
-| Rust | 0.031416 m³/s | 0.026180 m³/s |
-| Python | 0.031416 m³/s | 0.026180 m³/s |
-| JavaScript | 0.031416 m³/s | 0.026180 m³/s |
-| Clojure | 0.031416 m³/s | 0.026180 m³/s |
+| Implementation | 2-path flow rate | 4-path flow rate | Verified against C |
+|----------------|------------------|------------------|--------------------|
+| C | 0.031416 m³/s | 0.026180 m³/s | reference |
+| C++ | 0.031416 m³/s | 0.026180 m³/s | byte-identical |
+| Rust | 0.031416 m³/s | 0.026180 m³/s | exponent format only |
+| Basic | 0.031416 m³/s | 0.026180 m³/s | **not yet compiled** |
+| Pascal | 0.031416 m³/s | 0.026180 m³/s | **not yet compiled** |
+| Python | 0.031416 m³/s | 0.026180 m³/s | byte-identical |
+| JavaScript | 0.031416 m³/s | 0.026180 m³/s | exponent format only |
+| Clojure | 0.031416 m³/s | 0.026180 m³/s | byte-identical |
+| Elixir | 0.031416 m³/s | 0.026180 m³/s | byte-identical |
+| Haskell | 0.031416 m³/s | 0.026180 m³/s | **not yet compiled** |
 
-The C, C++, Python, and Clojure programs are byte-for-byte identical in their
-console output. Rust and JavaScript differ in exactly one respect: their native
-exponent formatting prints `Δt = 1.83e-7` where C's `%.2e` prints `1.83e-07`.
-Every number is the same.
+The C, C++, Python, Clojure, and Elixir programs are byte-for-byte identical in
+their console output. Rust and JavaScript differ in exactly one respect: their
+native exponent formatting prints `Δt = 1.83e-7` where C's `%.2e` prints
+`1.83e-07`. Every number is the same.
+
+The Basic, Pascal, and Haskell implementations were written against the C
+reference and target the byte-identical group — each carries a hand-written
+`FormatScientific` helper so its Δt reads `1.83e-07` — but no FreeBASIC, Free
+Pascal, or GHC toolchain was available when they were authored, so they have not
+been compiled and their output has not been diffed. Treat the three rows above
+as intent rather than as a measurement until you have run them yourself.
 
 The gap between the 2-path and 4-path figures is not an error. Different path
 angles sample the velocity profile differently, which is exactly what a real
@@ -266,15 +385,24 @@ To check the equivalence yourself:
 (cd c-language          && make -s && ./flowmeter)            > /tmp/c.txt
 (cd cpp-language        && make -s && ./flowmeter)            > /tmp/cpp.txt
 (cd rust-language       && cargo run -q)                      > /tmp/rust.txt
+(cd basic-language      && make -s && ./flowmeter)            > /tmp/basic.txt
+(cd pascal-language     && make -s && ./flowmeter)            > /tmp/pascal.txt
 (cd python-language     && python3 -m ultrasonic_flowmeter)   > /tmp/python.txt
 (cd javascript-language && node src/main.js)                  > /tmp/js.txt
 (cd clojure-language    && lein run)                          > /tmp/clj.txt
+(cd elixir-language     && mix compile >/dev/null && mix run -e "UltrasonicFlowmeter.Main.main([])") > /tmp/elixir.txt
+(cd haskell-language    && cabal run -v0 flowmeter)           > /tmp/haskell.txt
 
 diff /tmp/c.txt /tmp/cpp.txt      # identical
 diff /tmp/c.txt /tmp/python.txt   # identical
 diff /tmp/c.txt /tmp/clj.txt      # identical
+diff /tmp/c.txt /tmp/elixir.txt   # identical
 diff /tmp/c.txt /tmp/rust.txt     # exponent formatting only
 diff /tmp/c.txt /tmp/js.txt       # exponent formatting only
+
+diff /tmp/c.txt /tmp/basic.txt    # unverified — expected identical
+diff /tmp/c.txt /tmp/pascal.txt   # unverified — expected identical
+diff /tmp/c.txt /tmp/haskell.txt  # unverified — expected identical
 ```
 
 ## Path Configurations
@@ -363,6 +491,59 @@ impl FlowResult {
 }
 ```
 
+### Basic (`flowmeter.bi`)
+
+```basic
+' User-defined types
+Type AcousticPath      '' position, angle, pathLength, weight
+Type FlowMeterConfig   '' pipeDiameter, numPaths, paths(Any)
+Type PathMeasurement   '' tUpstream, tDownstream
+Type FlowResult        '' pathVelocities(Any), volumetricFlow
+
+Declare Function CalculatePathVelocity( _
+    ByRef path As AcousticPath, _
+    ByRef measurement As PathMeasurement) As Double
+
+'' Fills `result`; returns 0 on success, -1 on error
+Declare Function CalculateFlowRate( _
+    ByRef config As FlowMeterConfig, _
+    measurements() As PathMeasurement, _
+    ByRef result As FlowResult) As Integer
+
+Declare Function ToLitersPerSecond(ByVal m3PerS As Double) As Double
+Declare Function ToLitersPerMinute(ByVal m3PerS As Double) As Double
+
+'' Builders live in main.bas, as in C
+Sub Create2PathConfig(ByRef config As FlowMeterConfig, ByVal pipeDiameter As Double)
+Sub Create4PathConfig(ByRef config As FlowMeterConfig, ByVal pipeDiameter As Double)
+```
+
+### Pascal (`flowmeter.pas`, `unit FlowMeter`)
+
+```pascal
+{ Records }
+TAcousticPath      = record Position, Angle, PathLength, Weight: Double; end;
+TFlowMeterConfig   = record PipeDiameter: Double; NumPaths: LongWord; Paths: TAcousticPathArray; end;
+TPathMeasurement   = record TUpstream, TDownstream: Double; end;
+TFlowResult        = record PathVelocities: TDoubleArray; VolumetricFlow: Double; end;
+
+function MakeAcousticPath(APosition, AAngle, APathLength, AWeight: Double): TAcousticPath;
+function MakeFlowMeterConfig(APipeDiameter: Double; const APaths: TAcousticPathArray): TFlowMeterConfig;
+function MakePathMeasurement(ATUpstream, ATDownstream: Double): TPathMeasurement;
+
+function CalculatePathVelocity(const APath: TAcousticPath;
+                               const AMeasurement: TPathMeasurement): Double;
+function CalculateFlowRate(const AConfig: TFlowMeterConfig;
+                           const AMeasurements: TPathMeasurementArray): TFlowResult;
+
+function ToLitersPerSecond(ACubicMetersPerSecond: Double): Double;
+function ToLitersPerMinute(ACubicMetersPerSecond: Double): Double;
+
+{ Builders live in main.pas, as in C }
+function Create2PathConfig(APipeDiameter: Double): TFlowMeterConfig;
+function Create4PathConfig(APipeDiameter: Double): TFlowMeterConfig;
+```
+
 ### Python (`ultrasonic_flowmeter/core.py`)
 
 ```python
@@ -421,6 +602,55 @@ cubicMetersToLitersPerMinute(m3PerS)
 ; Utils
 (cubic-meters-to-liters-per-second m3-per-s)
 (cubic-meters-to-liters-per-minute m3-per-s)
+```
+
+### Elixir (`lib/ultrasonic_flowmeter/core.ex`)
+
+```elixir
+# Structs, each with @enforce_keys
+%Core.AcousticPath{position: _, angle: _, length: _, weight: _}
+%Core.FlowMeterConfig{pipe_diameter: _, num_paths: _, paths: _}
+%Core.PathMeasurement{t_upstream: _, t_downstream: _}
+%Core.FlowResult{path_velocities: _, volumetric_flow: _}
+
+# Constructors
+acoustic_path(position, angle, length, weight)
+flow_meter_config(pipe_diameter, paths)   # derives num_paths
+path_measurement(t_upstream, t_downstream)
+flow_result(path_velocities, volumetric_flow)
+
+# Algorithm
+calculate_path_velocity(path, measurement)   # => float
+calculate_flow_rate(config, measurements)    # => %FlowResult{}
+
+# Builders (UltrasonicFlowmeter.Main)
+create_2path_config(pipe_diameter)
+create_4path_config(pipe_diameter)
+
+# Utils
+to_liters_per_second(m3_per_s)
+to_liters_per_minute(m3_per_s)
+```
+
+### Haskell (`src/Flowmeter/Core.hs`)
+
+```haskell
+-- Records
+data AcousticPath    = AcousticPath    { position, angle, pathLength, weight :: Double }
+data FlowMeterConfig = FlowMeterConfig { pipeDiameter :: Double, numPaths :: Int, paths :: [AcousticPath] }
+data PathMeasurement = PathMeasurement { tUpstream, tDownstream :: Double }
+data FlowResult      = FlowResult      { pathVelocities :: [Double], volumetricFlow :: Double }
+
+mkFlowMeterConfig     :: Double -> [AcousticPath] -> FlowMeterConfig
+calculatePathVelocity :: AcousticPath -> PathMeasurement -> Double
+calculateFlowRate     :: FlowMeterConfig -> [PathMeasurement] -> FlowResult
+
+toLitersPerSecond :: Double -> Double
+toLitersPerMinute :: Double -> Double
+
+-- Builders live in app/Main.hs, as in C
+create2PathConfig :: Double -> FlowMeterConfig
+create4PathConfig :: Double -> FlowMeterConfig
 ```
 
 ## Example Output
@@ -515,12 +745,13 @@ This project is useful for:
 
 3. **Language Comparison**
    - Systems programming (C, C++, Rust)
+   - Structured and procedural (Basic, Pascal)
    - Scripting and dynamic typing (Python, JavaScript)
-   - Functional programming (Clojure)
-   - One algorithm, six sets of idioms — memory models, error handling, iteration
+   - Functional programming (Clojure, Elixir, Haskell)
+   - One algorithm, ten sets of idioms — memory models, error handling, iteration
 
 4. **Educational Demonstrations**
-   - Interactive exploration (Clojure REPL, Python REPL, Node REPL)
+   - Interactive exploration (Clojure REPL, Python REPL, Node REPL, IEx, GHCi)
    - Performance analysis (C, C++, Rust)
    - Physics simulation
 
@@ -555,6 +786,12 @@ This project is useful for:
    ```
    Unit tests for each implementation
    Integration tests with varied inputs
+   ```
+
+6. **Compile the unverified implementations**
+   ```
+   Basic, Pascal and Haskell ship uncompiled
+   Install fbc / fpc / ghc and diff their output against c-language/
    ```
 
 ### Physics References
@@ -597,6 +834,20 @@ cargo doc --open         # Browse the API documentation
 cargo clippy             # Lint
 ```
 
+**Basic:**
+```bash
+cd basic-language
+fbc -w all main.bas flowmeter.bas -x flowmeter   # -x names the executable, not -o
+./flowmeter
+```
+
+**Pascal:**
+```bash
+cd pascal-language
+fpc -O2 -Mobjfpc -Sh -Fcutf8 -oflowmeter main.pas   # compiles the unit as a dependency
+./flowmeter
+```
+
 **Python:**
 ```bash
 cd python-language
@@ -620,13 +871,32 @@ lein uberjar             # Build executable JAR
 java -jar target/ultrasonic-flowmeter-standalone.jar
 ```
 
+**Elixir:**
+```bash
+cd elixir-language
+mix run -e "UltrasonicFlowmeter.Main.main([])"   # Run demo
+mix escript.build && ./flowmeter                 # Standalone binary
+iex -S mix                                       # Interactive development
+mix dialyzer                                     # Check the @spec annotations
+```
+
+**Haskell:**
+```bash
+cd haskell-language
+cabal run flowmeter          # Build and run
+cabal haddock                # Browse the API documentation
+runghc -isrc app/Main.hs     # Run without Cabal
+ghc -isrc -O2 app/Main.hs -o flowmeter && ./flowmeter
+```
+
 ### Project History
 
 ```
 Commit 0959c64: Initial commit - C implementation
 Commit f7c169a: Add Clojure implementation
 Commit ae2fb61: Add top-level project README
-Add C++, Rust, Python, and JavaScript implementations
+Commit 9f9e77e: Add C++, Rust, Python, and JavaScript implementations
+Add Basic, Pascal, Elixir, and Haskell implementations
 ```
 
 View on GitHub: https://github.com/arkanere/ultrasonic-multipath-flowmeter
@@ -636,9 +906,13 @@ View on GitHub: https://github.com/arkanere/ultrasonic-multipath-flowmeter
 - **c-language/** - C implementation with detailed README
 - **cpp-language/** - C++ implementation with detailed README
 - **rust-language/** - Rust implementation with detailed README
+- **basic-language/** - FreeBASIC implementation with detailed README
+- **pascal-language/** - Free Pascal implementation with detailed README
 - **python-language/** - Python implementation with detailed README
 - **javascript-language/** - JavaScript implementation with detailed README
 - **clojure-language/** - Clojure implementation with detailed README
+- **elixir-language/** - Elixir implementation with detailed README
+- **haskell-language/** - Haskell implementation with detailed README
 - **README.md** - This file (project overview)
 - **.gitignore** - Git ignore patterns
 
@@ -658,10 +932,14 @@ View on GitHub: https://github.com/arkanere/ultrasonic-multipath-flowmeter
    - C: Direct control, maximum performance, manual memory
    - C++: The same control with automatic cleanup and value semantics
    - Rust: Compile-time memory safety without a garbage collector
+   - Basic: The C shape without the pointers — headers, UDTs, return codes
+   - Pascal: A compiler-enforced public/private boundary via `unit`
    - Python: Fewest lines, richest introspection, slowest execution
    - JavaScript: Runs anywhere — Node, browser, bundler — with zero setup
    - Clojure: Expressive, functional, interactive development
-   - All six: Same physics, same numbers, six sets of trade-offs
+   - Elixir: Guard clauses instead of branches, on a runtime built for concurrency
+   - Haskell: The core/main split enforced by the type system, not by convention
+   - All ten: Same physics, same numbers, ten sets of trade-offs
 
 4. **The Algorithm Is the Constant**
    - Roughly 40 lines of arithmetic, unchanged across every language
@@ -688,9 +966,13 @@ For questions about the implementation, see the per-language README:
 - `c-language/README.md` — C-specific details
 - `cpp-language/README.md` — C++-specific details
 - `rust-language/README.md` — Rust-specific details
+- `basic-language/README.md` — FreeBASIC-specific details
+- `pascal-language/README.md` — Pascal-specific details
 - `python-language/README.md` — Python-specific details
 - `javascript-language/README.md` — JavaScript-specific details
 - `clojure-language/README.md` — Clojure-specific details
+- `elixir-language/README.md` — Elixir-specific details
+- `haskell-language/README.md` — Haskell-specific details
 
 The physics background is covered in each of them, and in this file above.
 
@@ -698,4 +980,7 @@ The physics background is covered in each of them, and in this file above.
 
 **Last Updated:** August 29, 2026
 
-**Status:** ✓ Complete (all six implementations verified to produce identical results)
+**Status:** Ten implementations. Seven (C, C++, Rust, Python, JavaScript, Clojure,
+Elixir) are verified to produce identical results. Basic, Pascal, and Haskell are
+written but not yet compiled — see [Algorithm
+Equivalence](#algorithm-equivalence).

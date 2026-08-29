@@ -1,0 +1,26 @@
+cabal-version:      2.4
+name:               ultrasonic-flowmeter
+version:            1.0.0
+synopsis:           Ultrasonic multipath flow meter (transit-time differential method)
+description:
+  Computes volumetric flow rate from ultrasonic transit-time measurements taken
+  across multiple acoustic paths. The library exposes the pure algorithm; the
+  executable runs a 2-path and a 4-path demonstration.
+license:            MIT
+author:             arkanere
+build-type:         Simple
+
+library
+    exposed-modules:  Flowmeter.Core
+    hs-source-dirs:   src
+    build-depends:    base >=4.14 && <5
+    default-language: Haskell2010
+    ghc-options:      -Wall
+
+executable flowmeter
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    base >=4.14 && <5
+                    , ultrasonic-flowmeter
+    default-language: Haskell2010
+    ghc-options:      -Wall
