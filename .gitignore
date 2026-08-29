@@ -25,3 +25,18 @@ classes/
 .lein-plugins/
 *.jar
 pom.xml
+
+# Rust/Cargo
+# (target/ is already ignored above, shared with Leiningen)
+**/*.rs.bk
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node.js
+node_modules/
+npm-debug.log*

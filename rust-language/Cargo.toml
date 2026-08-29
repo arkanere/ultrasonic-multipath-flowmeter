@@ -1,0 +1,12 @@
+[package]
+name = "ultrasonic-flowmeter"
+version = "0.1.0"
+edition = "2021"
+description = "Transit-time differential ultrasonic multipath flow meter"
+license = "MIT"
+
+[dependencies]
+
+[[bin]]
+name = "flowmeter"
+path = "src/main.rs"
