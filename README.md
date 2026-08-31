@@ -1,11 +1,17 @@
 # Ultrasonic Multipath Flow Meter
 
-A transit-time differential ultrasonic flow meter algorithm, implemented ten
-times — in **C**, **C++**, **Rust**, **Basic**, **Pascal**, **Python**,
-**JavaScript**, **Clojure**, **Elixir**, and **Haskell** — for educational
-purposes. The physics is fixed; only the language idioms change, so the ten
-`core` modules can be read side by side as a study in memory models, error
-handling, iteration, and packaging.
+A transit-time differential ultrasonic flow meter algorithm, implemented
+seventeen times — in **C**, **C++**, **Rust**, **Go**, **Basic**, **Pascal**,
+**Python**, **JavaScript**, **TypeScript**, **Clojure**, **Common Lisp**,
+**Elixir**, **Haskell**, **Emacs Lisp**, **Lua**, **Vimscript**, and **Bash** —
+for educational purposes. The physics is fixed; only the language idioms change,
+so the seventeen `core` modules can be read side by side as a study in memory
+models, error handling, iteration, and packaging.
+
+The last four are the interesting ones. Vimscript, Emacs Lisp, and Lua are
+editor scripting languages rarely written as standalone programs, and Bash has
+no floating-point arithmetic at all — each has to solve a problem the other
+thirteen never encounter.
 
 - **GitHub:** https://github.com/arkanere/ultrasonic-multipath-flowmeter
 
@@ -85,7 +91,7 @@ The gap between the 2-path and 4-path flow rates is not an error — the differe
 path angles sample the velocity profile differently, which is exactly what a
 real multipath meter exploits.
 
-## The Ten Implementations
+## The Seventeen Implementations
 
 Every implementation follows the same split: a **core** module holding the pure
 ~40-line algorithm, and a **main** module holding the simulation, formatting, and
@@ -97,13 +103,20 @@ walkthrough, build details, and language-specific idioms.
 | **C** | [`c-language/`](c-language/) | Systems programming, manual `malloc`/`free` |
 | **C++** | [`cpp-language/`](cpp-language/) | Value semantics, RAII, `std::vector` |
 | **Rust** | [`rust-language/`](rust-language/) | Ownership, iterators, library + binary crate |
+| **Go** | [`go-language/`](go-language/) | Explicit errors, value semantics, package + `cmd` binary |
 | **Basic** | [`basic-language/`](basic-language/) | Procedural, `.bi` headers, explicit typing |
 | **Pascal** | [`pascal-language/`](pascal-language/) | Structured, units, `const` record parameters |
 | **Python** | [`python-language/`](python-language/) | Frozen dataclasses, type hints, stdlib only |
 | **JavaScript** | [`javascript-language/`](javascript-language/) | ES modules, frozen plain objects |
+| **TypeScript** | [`typescript-language/`](typescript-language/) | `readonly` types; immutability checked, not frozen |
 | **Clojure** | [`clojure-language/`](clojure-language/) | Functional, REPL-driven, immutable maps |
+| **Common Lisp** | [`lisp-language/`](lisp-language/) | `defstruct` records, ASDF systems, `format` directives |
 | **Elixir** | [`elixir-language/`](elixir-language/) | Functional, pattern matching, BEAM runtime |
 | **Haskell** | [`haskell-language/`](haskell-language/) | Pure functional, lazy, `IO`-free core |
+| **Emacs Lisp** | [`emacs-language/`](emacs-language/) | `cl-defstruct`, lexical binding, runs under `--batch` |
+| **Lua** | [`neovim-language/`](neovim-language/) | One data structure — the table; run by Neovim's `-l` |
+| **Vimscript** | [`vim-language/`](vim-language/) | Dictionaries, `cpoptions` dance, output via `writefile` |
+| **Bash** | [`bash-language/`](bash-language/) | Shell as glue, `awk` as the FPU, globals as return values |
 
 ## Running Them
 
@@ -117,13 +130,20 @@ configuration, and prints the results.
 | C | `cd c-language && make && ./flowmeter` |
 | C++ | `cd cpp-language && make && ./flowmeter` |
 | Rust | `cd rust-language && cargo run` |
+| Go | `cd go-language && go run ./cmd/flowmeter` |
 | Basic | `cd basic-language && make && ./flowmeter` |
 | Pascal | `cd pascal-language && make && ./flowmeter` |
 | Python | `cd python-language && python3 -m ultrasonic_flowmeter` |
 | JavaScript | `cd javascript-language && node src/main.js` |
+| TypeScript | `cd typescript-language && npm install && npm start` |
 | Clojure | `cd clojure-language && lein run` |
+| Common Lisp | `cd lisp-language && sbcl --script src/main.lisp` |
 | Elixir | `cd elixir-language && mix run -e "UltrasonicFlowmeter.Main.main([])"` |
 | Haskell | `cd haskell-language && cabal run flowmeter` |
+| Emacs Lisp | `cd emacs-language && emacs --batch -l main.el` |
+| Lua | `cd neovim-language && nvim --headless -l main.lua` |
+| Vimscript | `cd vim-language && vim -es -S main.vim` |
+| Bash | `cd bash-language && bash main.sh` |
 
 See each directory's README for prerequisites, REPL usage, and optimized builds.
 
@@ -149,8 +169,13 @@ See each directory's README for prerequisites, REPL usage, and optimized builds.
 |----------------|---------------------|
 | C | reference |
 | C++, Python, Clojure, Elixir | byte-identical console output |
-| Rust, JavaScript | identical numbers; native exponent format prints `1.83e-7` where C's `%.2e` prints `1.83e-07` |
+| Go, Common Lisp, Emacs Lisp, Lua, Vimscript, Bash | byte-identical console output |
+| Rust, JavaScript, TypeScript | identical numbers; native exponent format prints `1.83e-7` where C's `%.2e` prints `1.83e-07` |
 | Basic, Pascal, Haskell | **not yet compiled** — written against the C reference, output not diffed |
+
+Getting to byte-identical took a hand-written `format-scientific` helper in
+Common Lisp, whose `~E` directive prints `1.83e-7`. Go, Emacs Lisp, Lua,
+Vimscript, and Bash all reach C's `printf` closely enough to need nothing.
 
 The Basic, Pascal, and Haskell implementations were authored on a machine with no
 FreeBASIC, Free Pascal, or GHC toolchain. Each carries a hand-written
@@ -159,7 +184,12 @@ checked line by line against `c-language/`, but treat those three rows as intent
 rather than measurement until you have run them yourself.
 
 To check the equivalence, run each command from the table above, redirect the
-output to a file, and `diff` against the C output.
+output to a file, and `diff` against the C output:
+
+```bash
+(cd c-language && make) && ./c-language/flowmeter > /tmp/ref.txt
+diff <(cd go-language && go run ./cmd/flowmeter) /tmp/ref.txt
+```
 
 ## License
 

@@ -8,6 +8,11 @@
 # case-insensitive on macOS and a bare `flowmeter` pattern matches that dir)
 /*/flowmeter
 
+# ...but go-language/flowmeter/ is the Go package directory, not a binary, and
+# the pattern above would have swallowed it. A trailing slash matches only
+# directories, so this re-includes it without un-ignoring any executable.
+!/*/flowmeter/
+
 # IDE and editor files
 .vscode/
 .idea/
@@ -58,3 +63,9 @@ deps/
 dist-newstyle/
 dist/
 *.hi
+
+# Emacs Lisp
+*.elc
+
+# Common Lisp
+*.fasl
