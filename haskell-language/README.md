@@ -252,8 +252,22 @@ MIT License — free to use and modify for educational purposes. See the
 [top-level README](../README.md) for the cross-language comparison.
 
 
-**Note:** this implementation was written against the C reference but has not
-been compiled — no GHC is installed on the machine where it was authored. The
-algorithm and every format string were checked line by line against
-`../c-language/`, and the two-digit-exponent helper was validated numerically,
-but expect to fix a type error or two on first build.
+**Verified.** Compiled with GHC 9.14.1 and Cabal 3.18.1.0 and diffed against
+`../c-language/flowmeter`: the output is byte-identical, `1.83e-07` included.
+`-Wall` is clean on both the library and the executable.
+
+The first build did need one fix, and it is an instructive one. `printf` is
+variadic through a return-type class (`PrintfType`), so a `where`-bound helper
+whose body ends in a `printf` call has an ambiguous inferred type — GHC cannot
+choose the instance, and rejects it with `[GHC-39999]`. The three local printers
+in `app/Main.hs` therefore carry explicit signatures:
+
+```haskell
+    printPath :: (Int, AcousticPath) -> IO ()
+    printMeasurement :: (Int, PathMeasurement) -> IO ()
+    printVelocity :: (Int, Double) -> IO ()
+```
+
+Top-level `printf` calls are fine without them: the enclosing function's own
+signature already fixes the result to `IO ()`. It is only the un-annotated local
+bindings that leave the instance undetermined.

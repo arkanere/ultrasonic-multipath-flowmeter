@@ -270,8 +270,19 @@ MIT License — free to use and modify for educational purposes. See the
 [top-level README](../README.md) for the cross-language comparison.
 
 
-**Note:** this implementation was written against the C reference but has not
-been compiled — no Free Pascal compiler is installed on the machine where it was
-authored. The algorithm and every format string were checked line by line
-against `../c-language/`, and the two-digit-exponent helper was validated
-numerically, but expect to fix a compiler complaint or two on first build.
+**Verified.** Compiled with FPC 3.2.2 (aarch64, Darwin) and diffed against
+`../c-language/flowmeter`: the output is byte-identical, `1.83e-07` included.
+It built and produced correct output on the first attempt, with no source
+changes.
+
+The compiler does emit two warnings, both false positives:
+
+```
+flowmeter.pas(147,19) Warning: function result variable of a managed type does not seem to be initialized
+main.pas(82,19)       Warning: function result variable of a managed type does not seem to be initialized
+```
+
+Both are `SetLength(Result, ...)` on a dynamic-array function result. FPC's flow
+analysis treats that as a read of an uninitialized managed variable, but
+`SetLength` on a `nil` dynamic array is exactly how one is allocated, so the
+code is correct as written.

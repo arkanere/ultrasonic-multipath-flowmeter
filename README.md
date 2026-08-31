@@ -170,18 +170,28 @@ See each directory's README for prerequisites, REPL usage, and optimized builds.
 | C | reference |
 | C++, Python, Clojure, Elixir | byte-identical console output |
 | Go, Common Lisp, Emacs Lisp, Lua, Vimscript, Bash | byte-identical console output |
+| Pascal, Haskell | byte-identical console output |
 | Rust, JavaScript, TypeScript | identical numbers; native exponent format prints `1.83e-7` where C's `%.2e` prints `1.83e-07` |
-| Basic, Pascal, Haskell | **not yet compiled** — written against the C reference, output not diffed |
+| Basic | **not compiled** — FreeBASIC does not target macOS; see below |
 
-Getting to byte-identical took a hand-written `format-scientific` helper in
-Common Lisp, whose `~E` directive prints `1.83e-7`. Go, Emacs Lisp, Lua,
-Vimscript, and Bash all reach C's `printf` closely enough to need nothing.
+Thirteen of the seventeen match C byte for byte. Four of them needed a
+hand-written scientific-notation helper to get there — Basic, Pascal, Haskell,
+and Common Lisp, whose native `~E`-style output drops the exponent's leading
+zero. Go, Emacs Lisp, Lua, Vimscript, and Bash all reach C's `printf` closely
+enough to need nothing.
 
-The Basic, Pascal, and Haskell implementations were authored on a machine with no
-FreeBASIC, Free Pascal, or GHC toolchain. Each carries a hand-written
-`FormatScientific` helper so its `Δt` should read `1.83e-07`, and each was
-checked line by line against `c-language/`, but treat those three rows as intent
-rather than measurement until you have run them yourself.
+Pascal compiled and matched on the first attempt. Haskell needed one fix: three
+`where`-bound printers had to be given explicit type signatures, because
+`printf` is variadic through a return-type class and GHC cannot infer which
+instance an un-annotated local binding should use.
+
+**Basic is the exception.** FreeBASIC does not target macOS — upstream dropped
+Darwin support years ago, the 1.10.1 release ships no macOS asset of any
+architecture, and the last Darwin builds were 32-bit x86 that Apple Silicon
+cannot run. The implementation was checked line by line against `c-language/`
+but has never been executed; see
+[`basic-language/README.md`](basic-language/README.md) for how to run it under
+Linux, where `fbc` is widely packaged.
 
 To check the equivalence, run each command from the table above, redirect the
 output to a file, and `diff` against the C output:

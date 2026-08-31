@@ -114,6 +114,11 @@ printConfig config = do
   mapM_ printPath (zip [1 :: Int ..] (paths config))
   where
     radius = pipeDiameter config / 2.0
+
+    -- printf is variadic through a return-type class, so a local helper whose
+    -- body is a printf call needs an explicit signature: without one GHC has
+    -- no way to decide which PrintfType instance the result should be.
+    printPath :: (Int, AcousticPath) -> IO ()
     printPath (index, path) = do
       printf "  Path %d:\n" index
       printf "    Position: %.2f D\n" (position path)
@@ -128,6 +133,7 @@ printMeasurements measurements trueFlowVelocity = do
   printf "Simulated Measurements (True flow velocity: %.2f m/s):\n" trueFlowVelocity
   mapM_ printMeasurement (zip [1 :: Int ..] measurements)
   where
+    printMeasurement :: (Int, PathMeasurement) -> IO ()
     printMeasurement (index, m) =
       printf "  Path %d: t_upstream = %.8f s, t_downstream = %.8f s, Δt = %s s\n"
         index
@@ -148,6 +154,8 @@ printResults result = do
   printf "  %.2f L/s\n" (toLitersPerSecond flow)
   where
     flow = volumetricFlow result
+
+    printVelocity :: (Int, Double) -> IO ()
     printVelocity (index, velocity) =
       printf "  Path %d velocity: %.4f m/s\n" index velocity
 

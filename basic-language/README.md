@@ -261,9 +261,28 @@ MIT License — free to use and modify for educational purposes. See the
 [top-level README](../README.md) for the cross-language comparison.
 
 
-**Note:** this implementation was written against the C reference but has not
-been compiled — FreeBASIC has no Homebrew formula for Apple Silicon, so no `fbc`
-was available on the machine where it was authored. The algorithm and every
-format string were checked line by line against `../c-language/`, and the
-two-digit-exponent helper was validated numerically, but expect to fix a
-compiler complaint or two on first build.
+**Note: still not compiled.** This is the one implementation in the repository
+whose output has never been diffed against the C reference, and the reason is
+the toolchain, not the code.
+
+FreeBASIC does not target macOS. Upstream dropped Darwin support years ago — the
+1.10.1 release ships Linux, Windows, and DOS binaries plus a source bootstrap,
+with no macOS asset of any architecture, and the last Darwin builds were 32-bit
+x86, which Apple Silicon cannot run. There is no Homebrew formula because there
+is nothing to package.
+
+To verify it, run it on Linux, where `fbc` is packaged by most distributions:
+
+```bash
+# from the repository root, with any container runtime
+podman run --rm -v "$PWD/basic-language:/w" -w /w debian:bookworm \
+  sh -c 'apt-get update -qq && apt-get install -y -qq fbc make \
+         && make && ./flowmeter'
+```
+
+The algorithm and every format string were checked line by line against
+`../c-language/`, and the `FormatScientific` helper was validated numerically,
+so the numbers should be right — but treat this as intent rather than
+measurement until you have run it yourself. Expect to fix a compiler complaint
+or two on the first real build; the Pascal implementation needed none, but the
+Haskell one did.
